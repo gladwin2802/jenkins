@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "maven"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/gladwin2802/MavenWebApp.git'
+            }
+        }
+        stage('Compile') {
+            steps {
+               sh "mvn -f MavenWebApp/pom.xml clean compile" 
+            }
+        }
+        stage('Test') {
+            steps {
+               sh "mvn -f MavenWebApp/pom.xml test" 
+            }
+        }
+        stage('Build') {
+            steps {
+               sh "mvn -f MavenWebApp/pom.xml install" 
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh "cp //var//lib//jenkins//workspace//WebProject//MavenWebApp//target//MavenWebApp.war //opt//apache-tomcat-9.0.89//webapps"
+            }
+        }
+        
+    }
+}
